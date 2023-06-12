@@ -85,15 +85,11 @@ void setup()
   pinMode(25, INPUT_PULLDOWN);   // Player 1 JoyStick
   pinMode(26, INPUT_PULLDOWN);   // Player 2 JoyStick
 
-  endScreen(1);
-
-  // resetMatrix();
-  // resetMatrix();
+  resetMatrix();
 }
 
 void loop()
 {
-  /*
     if (player == 1) {
       while (digitalRead(25) != HIGH) {
         // Logik
@@ -105,7 +101,7 @@ void loop()
           position--;
         }
         showTopLine(position, 1);        
-        delay(250);
+        delay(50);
       }
       dropPeace(position, 1);
       player = 2;
@@ -120,13 +116,15 @@ void loop()
         } else if (joyX_2 < 500 && position < 6)  {
           position++;
         }
-        delay(250);
+        delay(50);
         showTopLine(position, 2);
       }
       dropPeace(position, 2);
       player = 1;
     }
-    */
+    if (firstRowBottom == 28 && secondRowBottom == 28 && thirdRowBottom == 28 && fourthRowBottom == 28 && fifthRowBottom == 28 && sixthRowBottom == 28 && seventhRowBottom == 28) {
+      endScreen(0);
+    }
 }
 
 void border(int start, int end)
@@ -650,7 +648,6 @@ void Line(int anfang, int ende) {
 void endScreen(int player) {
   matrix_1.clear();
   matrix_2.clear();
-
 
   // O 
   Line(9, 15);
