@@ -22,7 +22,7 @@ int fifthRowBottom = 0;
 int sixthRowBottom = 0;
 int seventhRowBottom = 0;
 
-int i = 0;
+int position = 0;
 
 int topLine[] = {361, 360, 358, 359, /*|*/ 328, 329, 342, 343, /*|*/ 310, 311, 312, 313, /*|*/ 280, 281, 294, 295, /*|*/ 262, 263, 264, 265, /*|*/ 232, 233, 246, 247, /*|*/ 214, 215, 216, 217};
 int topLineSecond[] = {214, 215, 216, 217, 232, 233, 246, 247, 262, 263, 264, 265,280, 281, 294, 295, 310, 311, 312, 313, 328, 329, 342, 343, 361, 360, 358, 359};
@@ -63,6 +63,10 @@ void fullBorder();
 void resetMatrix();
 void showTopLine(int i, int player);
 void dropPeace(int i, int player);
+int validI(int i);
+void endScreen(int player);
+void Line(int anfang, int ende);
+
 
 void setup()
 {
@@ -81,29 +85,29 @@ void setup()
   pinMode(25, INPUT_PULLDOWN);   // Player 1 JoyStick
   pinMode(26, INPUT_PULLDOWN);   // Player 2 JoyStick
 
+  endScreen(1);
+
   // resetMatrix();
-  resetMatrix();
+  // resetMatrix();
 }
 
 void loop()
 {
+  /*
     if (player == 1) {
       while (digitalRead(25) != HIGH) {
         // Logik
         // pixel oben blinken lassen
         joyX_1 = analogRead(32);
-        if (joyX_1 > 2500 && i < 6) {
-          i++;
-        } else if (joyX_1 < 500 && i > 0)  {
-          i--;
+        if (joyX_1 > 2500 && position < 6) {
+          position++;
+        } else if (joyX_1 < 500 && position > 0)  {
+          position--;
         }
-        showTopLine(i, 1);
+        showTopLine(position, 1);        
         delay(250);
       }
-      if (i == 0 && firstRowBottom >= 25) {
-        i++;
-      }
-      dropPeace(i, 1);
+      dropPeace(position, 1);
       player = 2;
     }
     
@@ -111,20 +115,18 @@ void loop()
     if (player == 2) {
       while (digitalRead(26) != HIGH) {
         joyX_2 = analogRead(33);
-        if (joyX_2 > 2500 && i > 0) {
-          i--;
-        } else if (joyX_2 < 500 && i < 6)  {
-          i++;
+        if (joyX_2 > 2500 && position > 0) {
+          position--;
+        } else if (joyX_2 < 500 && position < 6)  {
+          position++;
         }
         delay(250);
-        showTopLine(i, 2);
+        showTopLine(position, 2);
       }
-      if (i == 0 && firstRowBottom >= 25) {
-        i++;
-      }
-      dropPeace(i, 2);
+      dropPeace(position, 2);
       player = 1;
     }
+    */
 }
 
 void border(int start, int end)
@@ -410,234 +412,318 @@ void showTopLine(int i, int player)
   matrix_2.show();
 }
 void dropPeace(int row, int player) {
-  int count = 0;
   if (player == 1) {
     if (row == 0) {
       for (int i = 28; i >= firstRowBottom; i--)  {
-        if (count != 3 && i > 3 + firstRowBottom) {
+        if (i > 3 + firstRowBottom) {
           matrix_1.setPixelColor(firstRow[i], 0, 0, 0);
           matrix_1.setPixelColor(firstRow[i - 4], 0, 250, 0);
           matrix_2.setPixelColor(seventhRow[i], 0, 0, 0);
           matrix_2.setPixelColor(seventhRow[i - 4], 0, 250, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       firstRowBottom = firstRowBottom + 4;
     }  
     if (row == 1) {
       for (int i = 28; i >= secondRowBottom; i--)  {
-        if (count != 3 && i > 3 + secondRowBottom) {
+        if (i > 3 + secondRowBottom) {
           matrix_1.setPixelColor(secondRow[i], 0, 0, 0);
           matrix_1.setPixelColor(secondRow[i - 4], 0, 250, 0);
           matrix_2.setPixelColor(sixthRow[i], 0, 0, 0);
           matrix_2.setPixelColor(sixthRow[i - 4], 0, 250, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       secondRowBottom = secondRowBottom + 4;
     }  
     if (row == 2) {
       for (int i = 28; i >= thirdRowBottom; i--)  {
-        if (count != 3 && i > 3 + thirdRowBottom) {
-          matrix_1.setPixelColor(thirdRow[i], 0, 0, 0);
+        if (i > 3 + thirdRowBottom) {
+          matrix_1.setPixelColor(thirdRow[i ], 0, 0, 0);
           matrix_1.setPixelColor(thirdRow[i - 4], 0, 250, 0);
           matrix_2.setPixelColor(fifthRow[i], 0, 0, 0);
           matrix_2.setPixelColor(fifthRow[i - 4], 0, 250, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       thirdRowBottom = thirdRowBottom + 4;
     }
     if (row == 3) {
       for (int i = 28; i >= fourthRowBottom; i--)  {
-        if (count != 3 && i > 3 + fourthRowBottom) {
+        if (i > 3 + fourthRowBottom) {
           matrix_1.setPixelColor(fourthRow[i], 0, 0, 0);
           matrix_1.setPixelColor(fourthRow[i - 4], 0, 250, 0);
           matrix_2.setPixelColor(fourthRow[i], 0, 0, 0);
           matrix_2.setPixelColor(fourthRow[i - 4], 0, 250, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       fourthRowBottom = fourthRowBottom + 4;
     }
     if (row == 4) {
       for (int i = 28; i >= fifthRowBottom; i--)  {
-        if (count != 3 && i > 3 + fifthRowBottom) {
+        if (i > 3 + fifthRowBottom) {
           matrix_1.setPixelColor(fifthRow[i], 0, 0, 0);
           matrix_1.setPixelColor(fifthRow[i - 4], 0, 250, 0);
           matrix_2.setPixelColor(thirdRow[i], 0, 0, 0);
           matrix_2.setPixelColor(thirdRow[i - 4], 0, 250, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       fifthRowBottom = fifthRowBottom + 4;
     }
     if (row == 5) {
       for (int i = 28; i >= sixthRowBottom; i--)  {
-        if (count != 3 && i > 3 + sixthRowBottom) {
+        if (i > 3 + sixthRowBottom) {
           matrix_1.setPixelColor(sixthRow[i], 0, 0, 0);
           matrix_1.setPixelColor(sixthRow[i - 4], 0, 250, 0);
           matrix_2.setPixelColor(secondRow[i], 0, 0, 0);
           matrix_2.setPixelColor(secondRow[i - 4], 0, 250, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       sixthRowBottom = sixthRowBottom + 4;
     }
     if (row == 6) {
       for (int i = 28; i >= seventhRowBottom; i--)  {
-        if (count != 3 && i > 3 + seventhRowBottom) {
+        if (i > 3 + seventhRowBottom) {
           matrix_1.setPixelColor(seventhRow[i], 0, 0, 0);
           matrix_1.setPixelColor(seventhRow[i - 4], 0, 250, 0);
           matrix_2.setPixelColor(firstRow[i], 0, 0, 0);
           matrix_2.setPixelColor(firstRow[i - 4], 0, 250, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       seventhRowBottom = seventhRowBottom + 4;
     }
   } else if (player == 2) {
     if (row == 0) {
       for (int i = 28; i >= firstRowBottom; i--)  {
-        if (count != 3 && i > 3 + firstRowBottom) {
+        if (i > 3 + firstRowBottom) {
           matrix_1.setPixelColor(firstRow[i], 0, 0, 0);
           matrix_1.setPixelColor(firstRow[i - 4], 250, 0, 0);
           matrix_2.setPixelColor(seventhRow[i], 0, 0, 0);
           matrix_2.setPixelColor(seventhRow[i - 4], 250, 0, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       firstRowBottom = firstRowBottom + 4;
     }
     if (row == 1) {
       for (int i = 28; i >= secondRowBottom; i--)  {
-        if (count != 3 && i > 3 + secondRowBottom) {
+        if (i > 3 + secondRowBottom) {
           matrix_1.setPixelColor(secondRow[i], 0, 0, 0);
           matrix_1.setPixelColor(secondRow[i - 4], 250, 0, 0);
           matrix_2.setPixelColor(sixthRow[i], 0, 0, 0);
           matrix_2.setPixelColor(sixthRow[i - 4], 250, 0, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       secondRowBottom = secondRowBottom + 4;
     }
     if (row == 2) {
       for (int i = 28; i >= thirdRowBottom; i--)  {
-        if (count != 3 && i > 3 + thirdRowBottom) {
+        if (i > 3 + thirdRowBottom) {
           matrix_1.setPixelColor(thirdRow[i], 0, 0, 0);
           matrix_1.setPixelColor(thirdRow[i - 4], 250, 0, 0);
           matrix_2.setPixelColor(fifthRow[i], 0, 0, 0);
           matrix_2.setPixelColor(fifthRow[i - 4], 250, 0, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       thirdRowBottom = thirdRowBottom + 4;
     }
     if (row == 3) {
       for (int i = 28; i >= fourthRowBottom; i--)  {
-        if (count != 3 && i > 3 + fourthRowBottom) {
+        if (i > 3 + fourthRowBottom) {
           matrix_1.setPixelColor(fourthRow[i], 0, 0, 0);
           matrix_1.setPixelColor(fourthRow[i - 4], 250, 0, 0);
           matrix_2.setPixelColor(fourthRow[i], 0, 0, 0);
           matrix_2.setPixelColor(fourthRow[i - 4], 250, 0, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       fourthRowBottom = fourthRowBottom + 4;
     }
     if (row == 4) {
       for (int i = 28; i >= fifthRowBottom; i--)  {
-        if (count != 3 && i > 3 + fifthRowBottom) {
+        if (i > 3 + fifthRowBottom) {
           matrix_1.setPixelColor(fifthRow[i], 0, 0, 0);
           matrix_1.setPixelColor(fifthRow[i - 4], 250, 0, 0);
           matrix_2.setPixelColor(thirdRow[i], 0, 0, 0);
           matrix_2.setPixelColor(thirdRow[i - 4], 250, 0, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       fifthRowBottom = fifthRowBottom + 4;
     }
     if (row == 5) {
       for (int i = 28; i >= sixthRowBottom; i--)  {
-        if (count != 3 && i > 3 + sixthRowBottom) {
+        if (i > 3 + sixthRowBottom) {
           matrix_1.setPixelColor(sixthRow[i], 0, 0, 0);
           matrix_1.setPixelColor(sixthRow[i - 4], 250, 0, 0);
           matrix_2.setPixelColor(secondRow[i], 0, 0, 0);
           matrix_2.setPixelColor(secondRow[i - 4], 250, 0, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       sixthRowBottom = sixthRowBottom + 4;
     }
     if (row == 6) {
       for (int i = 28; i >= seventhRowBottom; i--)  {
-        if (count != 3 && i > 3 + seventhRowBottom) {
+        if (i > 3 + seventhRowBottom) {
           matrix_1.setPixelColor(seventhRow[i], 0, 0, 0);
           matrix_1.setPixelColor(seventhRow[i - 4], 250, 0, 0);
           matrix_2.setPixelColor(firstRow[i], 0, 0, 0);
           matrix_2.setPixelColor(firstRow[i - 4], 250, 0, 0);
-          count++;
         }
         matrix_1.show();
         matrix_2.show();
         delay(50);
-        count = 0;
       }
       seventhRowBottom = seventhRowBottom + 4;
   }
   }
     matrix_1.show();
     matrix_2.show();
+}
+int validI(int i) {
+
+  if (i == 0 && firstRowBottom == 28) {
+    return 0;
+  }
+  if (i == 1 && secondRowBottom == 28) {
+    return 0;
+  }
+  if (i == 2 && thirdRowBottom == 28) {
+    return 0;
+  }
+  if (i == 3 && fourthRowBottom == 28) {
+    return 0;
+  }
+  if (i == 4 && fifthRowBottom == 28) {
+    return 0;
+  }
+  if (i == 5 && sixthRowBottom == 28) {
+    return 0;
+  }
+  if (i == 6 && seventhRowBottom == 28) {
+    return 0;
+  }
+  return 1;
+}
+
+void Line(int anfang, int ende) {
+  for (int start =anfang; start < ende; start++) {
+    matrix_1.setPixelColor(start, 100, 100, 100);
+    matrix_2.setPixelColor(start, 100, 100, 100);
+  }
+}
+
+void endScreen(int player) {
+  matrix_1.clear();
+  matrix_2.clear();
+
+
+  // O 
+  Line(9, 15);
+  Line(17, 18);
+  Line(22, 23);
+  Line(25, 26);
+  Line(30, 31);
+  Line(33, 39);
+
+  // V
+  Line(49, 53);
+  Line(58, 59);
+  Line(70, 71);
+  Line(74, 75);
+  Line(81, 85);
+
+  // E
+  Line(97, 103);
+  Line(105, 106);
+  Line(107, 108);
+  Line(110, 111);
+  Line(113, 114);
+  Line(116, 117);
+  Line(118, 119);
+  Line(121, 122);
+  Line(126, 127);
+
+  // R
+  Line(137, 143);
+  Line(145, 146);
+  Line(147, 148);
+  Line(155, 157);
+  Line(158, 159);
+  Line(161, 164);
+  Line(165, 167);
+
+  // G
+  Line(369, 375);
+  Line(366, 367);
+  Line(361, 362);
+  Line(358, 359);
+  Line(355, 356);
+  Line(353, 354);
+  Line(348, 351);
+  Line(345, 346);
+
+  // A
+  Line(329, 335);
+  Line(326, 327);
+  Line(323, 324);
+  Line(316, 317);
+  Line(313, 314);
+  Line(305,311);
+
+  // M
+  Line(289, 295);
+  Line(282, 283);
+  Line(276, 277);
+  Line(266, 267);
+  Line(257,263);
+
+  // E
+  Line(241, 247);
+  Line(238, 239);
+  Line(236, 237);
+  Line(233, 234);
+  Line(230, 231);
+  Line(227, 228);
+  Line(225, 226);
+  Line(222, 223);
+  Line(217, 218);
+
+
+  matrix_1.show();
+  matrix_2.show();
 }
