@@ -52,7 +52,7 @@ int sixthRow[] = {138, 139, 148, 149, /*|*/ 140, 141, 146, 147, /*|*/ 142, 143, 
 int seventhRow[] = {164, 165, 170, 171, /*|*/ 162, 163, 172, 173, /*|*/ 160, 161, 174, 175,             /*|*/
                     208, 209, 222, 223, 211, 210, 220, 221, 213, 212, 218, 219, 214, 215, 216, 217,};      // 7. von links
 
-const int width = 7;
+const int width = 6;
 const int height = 7;
 
 int helpMatrix[width][height] = {
@@ -62,7 +62,7 @@ int helpMatrix[width][height] = {
   {0,0,0,0,0,0, 0},
   {0,0,0,0,0,0, 0},
   {0,0,0,0,0,0, 0},
-  {0,0,0,0,0,0, 0},
+  
 };
 
 int currentTopLane = -1;
@@ -75,12 +75,12 @@ void fullBorder();
 void resetMatrix();
 void showTopLine(int i, int player);
 void dropPeace(int i, int player);
-int validI(int i);
 void endScreen(int player);
 void Line(int anfang, int ende);
 int translatePosition(int position);
 bool checkWin(int row, int col, int dx, int dy);
 bool checkWinner();
+bool checkZeros();
 
 void setup()
 {
@@ -105,9 +105,7 @@ void setup()
 void loop()
 {
     if (player == 1) {
-      while (digitalRead(25) != HIGH) {
-        // Logik
-        // pixel oben blinken lassen
+      while (digitalRead(25) != HIGH || translatePosition(position) >= 6) {
         joyX_1 = analogRead(32);
         if (joyX_1 > 2500 && position < 6) {
           position++;
@@ -117,7 +115,7 @@ void loop()
         showTopLine(position, 1);        
         delay(250);
       }
-      helpMatrix[position][translatePosition(position)] = player;
+      helpMatrix[translatePosition(position)][position] = player;
       dropPeace(position, 1);
       if (checkWinner()) {
         endScreen(player);
@@ -125,9 +123,8 @@ void loop()
       player = 2;
     }
     
-    // Player 2
     if (player == 2) {
-      while (digitalRead(26) != HIGH) {
+      while (digitalRead(26) != HIGH || translatePosition(position) >= 6) {
         joyX_2 = analogRead(33);
         if (joyX_2 > 2500 && position > 0) {
           position--;
@@ -137,12 +134,16 @@ void loop()
         delay(250);
         showTopLine(position, 2);
       }
-      helpMatrix[position][translatePosition(position)] = player;
+      helpMatrix[translatePosition(position)][position] = player;
       dropPeace(position, 2);
       if (checkWinner()) {
         endScreen(player);
       }
       player = 1;
+    }
+
+    if (checkZeros()) {
+      endScreen(0);
     }
 }
 
@@ -156,6 +157,7 @@ void border(int start, int end)
     matrix_2.show();
   }
 }
+
 void fullBorder()
 {
   int i = 8;
@@ -167,12 +169,15 @@ void fullBorder()
   }
   border(184, 208);
   i = 224;
-  while (i < 376)
-  {
-    border(i, i + 8);
-    i = i + 24;
-  }
-  border(376, 384);
+
+  border(224, 230);
+  border(250, 256);
+  border(272, 278);
+  border(298, 304);
+  border(320, 326);
+  border(346, 352);
+  border(368, 384); // oben links
+
   border(22, 26);
   border(40, 42);
   border(54, 56);
@@ -182,14 +187,16 @@ void fullBorder()
   border(118, 122);
   border(136, 138);
   border(150, 152);
-  border(166, 170);
+  border(166, 170); // unten rechts
 }
+
 void resetMatrix()
 {
   matrix_1.clear();
   matrix_2.clear();
   fullBorder();
 }
+
 void showTopLine(int i, int player)
 {
   if (player == 1) {
@@ -521,32 +528,6 @@ void dropPeace(int row, int player) {
     matrix_2.show();
 }
 
-int validI(int i) {
-
-  if (i == 0 && firstRowBottom == 28) {
-    return 0;
-  }
-  if (i == 1 && secondRowBottom == 28) {
-    return 0;
-  }
-  if (i == 2 && thirdRowBottom == 28) {
-    return 0;
-  }
-  if (i == 3 && fourthRowBottom == 28) {
-    return 0;
-  }
-  if (i == 4 && fifthRowBottom == 28) {
-    return 0;
-  }
-  if (i == 5 && sixthRowBottom == 28) {
-    return 0;
-  }
-  if (i == 6 && seventhRowBottom == 28) {
-    return 0;
-  }
-  return 1;
-}
-
 void Line(int anfang, int ende) {
   for (int start =anfang; start < ende; start++) {
     matrix_1.setPixelColor(start, 100, 100, 100);
@@ -557,7 +538,6 @@ void Line(int anfang, int ende) {
 void endScreen(int player) {
   matrix_1.clear();
   matrix_2.clear();
-
   // O 
   Line(9, 15);
   Line(17, 18);
@@ -629,21 +609,135 @@ void endScreen(int player) {
   Line(222, 223);
   Line(217, 218);
 
-
   matrix_1.show();
   matrix_2.show();
-
   delay(10000);
+
+  if (player == 1) {
+    matrix_1.clear();
+    matrix_2.clear();
+
+    // P
+    Line(336, 343);
+    Line(332, 333);
+    Line(329, 330);
+    Line(326, 327);
+    Line(323, 324);
+    Line(313, 317);
+
+    // 1
+    Line(256, 263);
+    Line(266, 267);
+    Line(276, 277);
+
+    // W
+    Line(10, 15);
+    Line(22, 23);
+    Line(26, 27);
+    Line(38, 39);
+    Line(42, 47);
+
+    // I
+    Line(57, 63);
+
+    // N
+    Line(73, 79);
+    Line(82, 83);
+    Line(92, 93);
+    Line(100, 101);
+    Line(105, 111);
+
+    // S
+    Line(121, 122);
+    Line(123, 127);
+    Line(129, 130);
+    Line(132, 133);
+    Line(134, 135);
+    Line(137, 138);
+    Line(139, 140);
+    Line(142, 143);
+    Line(145, 146);
+    Line(148, 149);
+    Line(150, 151);
+    Line(153, 156);
+    Line(158, 159);
+
+    matrix_1.show();
+    matrix_2.show();
+    delay(10000);
+
+  } else if (player == 2) {
+    matrix_1.clear();
+    matrix_2.clear();
+
+    // P
+    Line(336, 343);
+    Line(332, 333);
+    Line(329, 330);
+    Line(326, 327);
+    Line(323, 324);
+    Line(313, 317);
+
+    // 2
+    Line(262, 263);
+    Line(258, 259);
+    Line(255, 257);
+    Line(252, 253);
+    Line(249, 250);
+    Line(244, 246);
+    Line(240, 241);
+    Line(265, 266);
+    Line(277, 278);
+    Line(270, 273);
+
+
+    // W
+    Line(10, 15);
+    Line(22, 23);
+    Line(26, 27);
+    Line(38, 39);
+    Line(42, 47);
+
+    // I
+    Line(57, 63);
+
+    // N
+    Line(73, 79);
+    Line(82, 83);
+    Line(92, 93);
+    Line(100, 101);
+    Line(105, 111);
+
+    // S
+    Line(121, 122);
+    Line(123, 127);
+    Line(129, 130);
+    Line(132, 133);
+    Line(134, 135);
+    Line(137, 138);
+    Line(139, 140);
+    Line(142, 143);
+    Line(145, 146);
+    Line(148, 149);
+    Line(150, 151);
+    Line(153, 156);
+    Line(158, 159);
+
+    matrix_1.show();
+    matrix_2.show();
+    delay(10000);
+
+  }
   ESP.restart();
 }
 
 int translatePosition(int position) {
 
   if (position == 0) {
-    if (secondRowBottom == 0) {
+    if (firstRowBottom == 0) {
       return 0;
     }
-    return secondRowBottom / 4;
+    return firstRowBottom / 4;
   }
   if (position == 1) {
     if (secondRowBottom == 0) {
@@ -730,4 +824,15 @@ bool checkWinner() {
         }
     }
     return false;
+}
+
+bool checkZeros() {
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+      if (helpMatrix[i][j] == 0) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
